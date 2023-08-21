@@ -1,9 +1,10 @@
 <script setup>
-import BreezeAuthenticatedLayout from '@/Layouts/Authenticated.vue';
-import { Head } from '@inertiajs/inertia-vue3';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head, useForm } from '@inertiajs/vue3';
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const props = defineProps({
-    posts: {
+    products: {
         type: Object,
         default: () => ({}),
     },
@@ -18,7 +19,7 @@ const props = defineProps({
 <template>
     <Head title="Product" />
 
-    <BreezeAuthenticatedLayout>
+    <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Product
@@ -51,7 +52,7 @@ const props = defineProps({
                         <tbody>
                         <tr v-for="product in products.data" :key="product.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                             <td data-label="Title" class="py-4 px-6">
-                                {{ product.title }}
+                                {{ product.name }}
                             </td>
                             <td data-label="Title" class="py-4 px-6">
                                 {{ product.description }}
@@ -61,12 +62,12 @@ const props = defineProps({
                                 class="py-4 px-6 w-48"
                             >
                                 <div type="justify-start lg:justify-end" no-wrap>
-                                    <BreezeButton class="ml-4 bg-green-500 px-2 py-1 rounded text-white cursor-pointer" v-if="can.edit">
+                                    <PrimaryButton class="ml-4 bg-green-500 px-2 py-1 rounded text-white cursor-pointer" v-if="can.edit">
                                         Edit
-                                    </BreezeButton>
-                                    <BreezeButton class="ml-4 bg-red-500 px-2 py-1 rounded text-white cursor-pointer" v-if="can.delete">
+                                    </PrimaryButton>
+                                    <PrimaryButton class="ml-4 bg-red-500 px-2 py-1 rounded text-white cursor-pointer" v-if="can.delete">
                                         Delete
-                                    </BreezeButton>
+                                    </PrimaryButton>
                                 </div>
                             </td>
                         </tr>
@@ -75,5 +76,5 @@ const props = defineProps({
                 </div>
             </div>
         </div>
-    </BreezeAuthenticatedLayout>
+    </AuthenticatedLayout>
 </template>

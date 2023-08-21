@@ -24,7 +24,7 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-});
+})->name('home');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -37,8 +37,31 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::post('/products', [ProductController::class, 'create']);
-Route::post('/products/{product}/upload-photo', [ProductController::class, 'uploadPhoto']);
-Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products', [App\Http\Controllers\Admin\ProductController::class, 'index']);
 
 require __DIR__.'/auth.php';
+
+Route::group([
+    'namespace' => 'App\Http\Controllers\Admin',
+    'prefix' => 'admin',
+    'middleware' => ['auth'],
+], function () {
+    Route::resource('user', 'UserController');
+    Route::resource('role', 'RoleController');
+    Route::resource('permission', 'PermissionController');
+    Route::resource('product', 'ProductController');
+
+    Route::get('product', [App\Http\Controllers\Admin\ProductController::class, 'index'])->name('product.index');
+
+});
+
+
+Route::group([
+    'namespace' => 'App\Http\Controllers\Admin',
+    'prefix' => 'shop',
+    'middleware' => ['auth'],
+], function () {
+
+    Route::get('product', [App\Http\Controllers\ProductController::class, 'index'])->name('shop.index');
+
+});
