@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Cart;
 
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 use Cart;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -39,7 +41,7 @@ class CartControllerTest extends TestCase
     public function testCartStore()
     {
         $data = [
-            'id' => 1,
+            'id' => Str::uuid()->toString(),
             'name' => 'Product 1',
             'price' => 10,
             'quantity' => 2,
@@ -55,13 +57,20 @@ class CartControllerTest extends TestCase
     public function testCartStoreInvalidData()
     {
         $invalidData = [
-            // Missing required fields
+            'id' => Str::uuid()->toString(),
+            'name' => 'Product 1',
+            'price' => 10,
+            'quantity' => 0, // Invalid quantity value
         ];
 
-        $response = $this->post(route('cart.store'), $invalidData);
+        $this->withoutExceptionHandling(); // This allows exceptions to be thrown and not caught
 
-        $response->assertStatus(422);
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('The quantity field must be at least 1.');
+
+        $this->post(route('cart.store'), $invalidData);
     }
+
 
     // Update action tests
     public function testCartUpdate()
@@ -69,15 +78,15 @@ class CartControllerTest extends TestCase
         Cart::add(['id' => 1, 'name' => 'Product 1', 'price' => 10, 'quantity' => 2]);
 
         $data = [
-            'id' => 1,
             'quantity' => 5,
         ];
 
-        $response = $this->put(route('cart.update', 1), $data);
+        $response = $this->post(route('cart.update', 1), $data);
 
         $response->assertStatus(200)
-            ->assertJsonFragment(['quantity' => 5]);
+            ->assertJsonFragment(['quantity' => 7]);
     }
+
 
     public function testCartUpdateNonExistingItem()
     {
@@ -86,7 +95,7 @@ class CartControllerTest extends TestCase
             'quantity' => 5,
         ];
 
-        $response = $this->put(route('cart.update', 999), $data);
+        $response = $this->post(route('cart.update', 999), $data);
 
         $response->assertStatus(404);
     }

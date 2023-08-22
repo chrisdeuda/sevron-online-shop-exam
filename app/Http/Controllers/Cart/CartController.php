@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Cart;
 
+use App\Services\CartService;
 use Cart;
-//use Darryldecode\Cart\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -11,72 +11,51 @@ use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
 {
+
+    protected $cartService;
+
+    public function __construct(CartService $cartService,
+        )
+    {
+        $this->cartService = $cartService;
+    }
+
     public function index()
     {
         $cartItems = Cart::getContent();
 
         return response()->json($cartItems, Response::HTTP_OK);
     }
-    public function store(Request $request)
+    public function store(CartCreateRequest $request)
     {
-        $data = [
-            'id' => $request->id,
-            'name' => $request->name,
-            'price' => $request->price,
-            'quantity' => $request->quantity,
-            'attributes' => [
-                'image' => $request->image,
-            ],
-        ];
+        $data = $request->validated();
 
-        // Validate the data before adding to the cart
-        $validator = Validator::make($data, [
-            'id' => 'required|integer',
-            'name' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'quantity' => 'required|integer|min:1',
-            'attributes.image' => 'nullable|string', // Adjust the validation rule as needed
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        Cart::add($data);
+        $this->cartService->addToCart($data);
 
         session()->flash('success', 'Product is Added to Cart Successfully !');
 
         return response()->json(Cart::getContent(), Response::HTTP_OK);
     }
 
-    public function update(Request $request)
+    public function update(CartUpdateRequest $request, $id)
     {
-        $itemId = $request->id;
-        $newQuantity = $request->quantity;
+
+        $data = $request->validated();
+
 
         // Check if the item exists in the cart
-        $item = Cart::get($itemId);
+        $item = $this->cartService->getCartItem($id);
         if (!$item) {
             return response()->json(['message' => 'Item not found in the cart.'], Response::HTTP_NOT_FOUND);
+            return response()->json(['error' => 'Item not found'], Response::HTTP_NOT_FOUND);
         }
 
-        if ($newQuantity <= 0) {
-            return response()->json(['message' => 'Quantity must be a positive integer.'], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        Cart::update(
-            $itemId,
-            [
-                'quantity' => [
-                    'relative' => false,
-                    'value' => $newQuantity,
-                ],
-            ]
-        );
-
+        // Update the item's quantity
+        $this->cartService->updateCartItem($id, ['quantity' => $data['quantity']]);
         session()->flash('success', 'Item Cart is Updated Successfully !');
 
-        return response()->json(Cart::getContent(), Response::HTTP_OK);
+        // Return the updated cart contents
+        return response()->json($this->cartService->getCartContents(), Response::HTTP_OK);
     }
 
     public function destroy(Request $request)
