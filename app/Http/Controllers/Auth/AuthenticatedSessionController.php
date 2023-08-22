@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,6 +34,20 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        $user = User::where('email', $request->email)->get();
+
+        // TODO: Make the role as global const
+        $isCustomer = auth()->user()->hasRole('customer') ;
+        $isAdmin = auth()->user()->hasRole('admin') ;
+
+        if ($isCustomer) {
+            return redirect('/shop/product');
+        }
+
+        if ($isAdmin) {
+            return redirect('dashboard');
+        }
 
         return redirect()->intended(RouteServiceProvider::HOME);
     }
