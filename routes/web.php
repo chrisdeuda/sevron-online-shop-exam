@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -54,6 +55,13 @@ Route::group([
     Route::get('product', [App\Http\Controllers\Admin\ProductController::class, 'index'])->name('product.index');
 
 });
+
+Route::get('products', [ProductController::class, 'index'])->name('products.list');
+Route::get('cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('cart', [CartController::class, 'store'])->name('cart.store');
+Route::put('cart/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+Route::delete('cart', [CartController::class, 'clear'])->name('cart.clear');;
 
 
 Route::group([
