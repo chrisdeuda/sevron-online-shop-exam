@@ -64,6 +64,6 @@ class CartController extends Controller
     {
         $this->cartService->clearCart();
 
-        return response()->json([], Response::HTTP_NO_CONTENT);
+        return response()->json($this->cartService->getCartContents(), Response::HTTP_NO_CONTENT);
     }
 }
