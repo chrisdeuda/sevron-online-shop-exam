@@ -6,7 +6,7 @@ export default {
         async addToCart(product) {
             try {
                 const cartItem = this.createCartItem(product);
-                
+
                 const response = await axios.post('/cart', cartItem); // Use the correct URL
                 if (response.data.message === 'success') {
                     this.successMessage = 'Product added to cart!';
@@ -23,7 +23,7 @@ export default {
                 id: product.id,
                 name: product.name,
                 price: product.price,
-                image: product.image,
+                photo: product.photo,
                 quantity: 1, // default order 1
             };
         },
@@ -49,24 +49,25 @@ export default {
             <h2 class="text-3xl font-extrabold text-gray-900">Latest Products</h2>
             <div class="h-1 bg-gray-800 w-48 my-6"></div>
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                <div v-for="product in products" :key="product.id" class="w-full mx-auto overflow-hidden bg-white rounded-lg shadow-md">
-                    <img src="https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-04.jpg" alt="Product Image" class="w-full h-60 object-cover object-center">
-                    <div class="px-5 py-3">
+                <div v-for="product in products" :key="product.id" class="w-full mx-auto overflow-hidden bg-white rounded-lg shadow-md flex flex-col">
+                    <img :src="product.photo" alt="Product Image" class="w-full h-60 object-cover object-center">
+                    <div class="px-5 py-3 flex-grow">
                         <div class="flex items-center justify-between mb-5">
-                            <h3 class="text-gray-700 uppercase">{{ product.name }}</h3>
+                            <h3 class="text-gray-700">{{ product.name }}</h3>
                             <span class="mt-2 text-gray-500 font-semibold">${{ product.price }}</span>
                         </div>
-                        <form @submit.prevent="addToCart(product)" class="flex justify-end">
-                            <input type="hidden" v-model="product.id" name="id">
-                            <input type="hidden" v-model="product.name" name="name">
-                            <input type="hidden" v-model="product.price" name="price">
-                            <input type="hidden" v-model="product.image" name="image">
-                            <input type="hidden" :value="product.quantity" name="quantity">
-                            <button type="submit" class="px-4 py-1.5 text-white text-sm bg-gray-900 rounded">Add To Cart</button>
-                        </form>
                     </div>
+                    <form @submit.prevent="addToCart(product)" class="flex justify-end mt-3">
+                        <input type="hidden" v-model="product.id" name="id">
+                        <input type="hidden" v-model="product.name" name="name">
+                        <input type="hidden" v-model="product.price" name="price">
+                        <input type="hidden" v-model="product.image" name="image">
+                        <input type="hidden" :value="product.quantity" name="quantity">
+                        <button type="submit" class="px-4 py-1.5 text-white text-sm bg-gray-900 rounded">Add To Cart</button>
+                    </form>
                 </div>
             </div>
+
         </div>
     </div>
 </template>
