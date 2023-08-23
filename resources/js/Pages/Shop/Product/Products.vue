@@ -3,11 +3,42 @@ export default {
     props: ['products'], // Declare that you're expecting 'products' prop
 
     methods: {
-        addToCart(product) {
-            // Implement your logic to add the product to the cart
-            console.log('Adding product to cart:', product);
-
+        async addToCart(product) {
+            try {
+                const cartItem = this.createCartItem(product);
+                
+                const response = await axios.post('/cart', cartItem); // Use the correct URL
+                if (response.data.message === 'success') {
+                    this.successMessage = 'Product added to cart!';
+                } else {
+                    this.successMessage = 'Failed to add product to cart.';
+                }
+            } catch (error) {
+                console.error('Error adding product to cart:', error);
+            }
         },
+
+        createCartItem(product) {
+            return {
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+                quantity: 1, // default order 1
+            };
+        },
+    },
+    data() {
+        return {
+            successMessage: '',
+            product: {
+                id: '',
+                name: '',
+                price: '',
+                image: '',
+                quantity: 1,
+            },
+        };
     },
 };
 </script>
@@ -30,7 +61,7 @@ export default {
                             <input type="hidden" v-model="product.name" name="name">
                             <input type="hidden" v-model="product.price" name="price">
                             <input type="hidden" v-model="product.image" name="image">
-                            <input type="hidden" value="1" name="quantity">
+                            <input type="hidden" :value="product.quantity" name="quantity">
                             <button type="submit" class="px-4 py-1.5 text-white text-sm bg-gray-900 rounded">Add To Cart</button>
                         </form>
                     </div>
