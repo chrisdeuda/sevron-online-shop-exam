@@ -1,13 +1,27 @@
 <script>
 
-import { reactive } from 'vue';
+import { ref, reactive } from 'vue';
+import CheckoutForm from './CheckoutForm.vue';
 export default {
+    components: {
+        CheckoutForm
+    },
     props: {
         cartItems: Object, // Provided by Inertia
     },
     setup(props) {
+        const showCheckout = ref(false);
+        const showCheckoutForm = () => {
+            showCheckout.value = true;
+        };
+
+        const hideCheckoutForm = () => {
+            showCheckout.value = false;
+        };
         const state = reactive({
             successMessage: '',
+            showCheckout: false
+
         });
         const removeItem = async (itemId, index) => {
             console.log(props.cartItems);
@@ -18,6 +32,7 @@ export default {
                 if (response.ok) {
                     delete props.cartItems[itemId]; // Remove the item by key
                     state.successMessage = 'Item removed from the cart.';
+                    console.log('After fetch success');
                 }
             } catch (error) {
                 console.error('Error removing item:', error);
@@ -27,6 +42,11 @@ export default {
         return {
             state,
             removeItem,
+            //showCheckout: state.showCheckout // Include showCheckout in the return object
+            showCheckout,
+            showCheckoutForm,
+            hideCheckoutForm
+
         };
     },
     computed: {
@@ -52,10 +72,13 @@ export default {
 <!--                    <div v-if="successMessage" class="p-4 mb-3 bg-blue-400 rounded">
                         <p class="text-white">{{ successMessage }}</p>
                     </div>-->
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-3xl font-bold">Your Carts</h3>
-                        <button @click="proceedToCheckout" class="px-6 py-2 text-sm rounded shadow text-white bg-green-500">Proceed to Checkout</button>
-                    </div>
+                    <!-- Toggle between cart and checkout form -->
+                    <div v-if="!showCheckout">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-3xl font-bold">Your Cart</h3>
+                            <button @click="showCheckoutForm" class="px-6 py-2 text-sm rounded shadow text-white bg-green-500">Proceed to Checkout</button>
+                        </div>
+                        <!-- Existing cart table code here -->
                     <div class="flex-1">
                         <table class="w-full text-sm lg:text-base" cellspacing="0">
                             <thead>
@@ -96,6 +119,16 @@ export default {
 <!--                                &lt;!&ndash; Clear cart button here &ndash;&gt;-->
 <!--                            </div>-->
 <!--                        </div>-->
+                    </div>
+
+                    </div>
+                    <div v-else>
+                        <!-- Display the checkout form -->
+                        <checkout-form
+                            :cart-items="cartItems"
+                            :total-amount="cartTotal"
+                            @cancel="hideCheckoutForm" />
+                        <!-- Emit this event from CheckoutForm.vue -->
                     </div>
                 </div>
             </div>
