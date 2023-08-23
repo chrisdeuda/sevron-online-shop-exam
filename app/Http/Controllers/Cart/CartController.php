@@ -7,6 +7,8 @@ use Cart;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Inertia\Inertia;
+
 class CartController extends Controller
 {
     protected CartService $cartService;
@@ -21,7 +23,10 @@ class CartController extends Controller
         //TODO: add paginations
         $cartItems = $this->cartService->getCartContents();
 
-        return response()->json($cartItems, Response::HTTP_OK);
+        return Inertia::render('Shop/Product/Cart', [
+            'cartItems' => $cartItems, 
+        ]);
+
     }
     public function store(CartCreateRequest $request)
     {
@@ -29,6 +34,7 @@ class CartController extends Controller
 
         $this->cartService->addToCart($data);
 
+        ray($this->cartService->getCartContents());
         return response()->json($this->cartService->getCartContents(), Response::HTTP_OK);
     }
 
