@@ -2,8 +2,10 @@
 
 import { ref, reactive } from 'vue';
 import CheckoutForm from './CheckoutForm.vue';
+import NavLink from "@/Components/NavLink.vue";
 export default {
     components: {
+        NavLink,
         CheckoutForm
     },
     props: {
@@ -77,6 +79,9 @@ export default {
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="text-3xl font-bold">Your Cart</h3>
                             <button @click="showCheckoutForm" class="px-6 py-2 text-sm rounded shadow text-white bg-green-500">Proceed to Checkout</button>
+                            <NavLink :href="route('products.list')" :active="route().current('products.list')">
+                               Back to Shopping
+                            </NavLink>
                         </div>
                         <!-- Existing cart table code here -->
                     <div class="flex-1">
@@ -107,7 +112,7 @@ export default {
 
                             <tr>
                                 <td colspan="3" class="py-4 px-6 text-right font-semibold">Total:</td>
-                                <td class="py-4 px-6 text-left font-semibold">${{ cartTotal }}</td>
+                                <td class="py-4 px-6 text-left font-semibold">${{ cartTotal.toFixed(2) }}</td>
                                 <td class="py-4 px-6 text-left"></td>
                             </tr>
                             </tbody>
