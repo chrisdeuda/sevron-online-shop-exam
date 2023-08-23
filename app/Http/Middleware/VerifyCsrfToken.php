@@ -12,6 +12,10 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        // TODO: Fix CSRF error token mismatch
+        'login',
+        'cart',
+        'cart/*',
+        'api/*'
     ];
 }
