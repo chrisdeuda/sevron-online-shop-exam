@@ -126,7 +126,7 @@ class CartControllerTest extends TestCase
 
         $response = $this->delete(route('cart.clear'));
 
-        $response->assertStatus(200)
+        $response->assertStatus(204)
             ->assertJsonCount(0);
     }
 
@@ -136,7 +136,7 @@ class CartControllerTest extends TestCase
 
         $response = $this->delete(route('cart.clear'));
 
-        $response->assertStatus(200)
+        $response->assertStatus(204)
             ->assertJsonCount(0);
     }
 }
