@@ -20,6 +20,14 @@ class Order extends Model
         'total_amount' => 'decimal:2',
     ];
 
+    protected $fillable = [
+        // other fields,
+        'user_id',
+        'order_status',
+        'total_amount',
+
+    ];
+
     protected static function boot()
     {
         parent::boot();

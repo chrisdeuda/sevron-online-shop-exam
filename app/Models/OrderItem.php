@@ -22,6 +22,16 @@ class OrderItem extends Model
         'subtotal' => 'decimal:2'
     ];
 
+    protected $fillable = [
+        'order_id',
+        'product_id',
+        'quantity',
+        'price',
+        'subtotal'
+    ];
+
+
+
     protected static function boot()
     {
         parent::boot();
