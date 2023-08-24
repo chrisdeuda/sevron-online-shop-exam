@@ -1,39 +1,66 @@
 <script>
 
-const props = defineProps({
-    products: {
-        type: Object,
-        default: () => ({}),
-    },
-    can: {
-        type: Object,
-        default: () => ({}),
-    },
-})
+import { ref, reactive } from 'vue';
+import CheckoutForm from './CheckoutForm.vue';
+import NavLink from "@/Components/NavLink.vue";
 export default {
-    data() {
+    components: {
+        NavLink,
+        CheckoutForm
+    },
+    props: {
+        cartItems: Object,
+    },
+    setup(props) {
+        const showCheckout = ref(false);
+        const showCheckoutForm = () => {
+            showCheckout.value = true;
+        };
+
+        const hideCheckoutForm = () => {
+            showCheckout.value = false;
+        };
+        const state = reactive({
+            successMessage: '',
+            showCheckout: false
+
+        });
+        const removeItem = async (itemId, index) => {
+            console.log(props.cartItems);
+            try {
+                const response = await fetch(`/cart/${itemId}`, {
+                    method: 'DELETE',
+                });
+                if (response.ok) {
+                    delete props.cartItems[itemId]; // Remove the item by key
+                    state.successMessage = 'Item removed from the cart.';
+                    console.log('After fetch success');
+                }
+            } catch (error) {
+                console.error('Error removing item:', error);
+            }
+        };
+
         return {
-            successMessage: '', // Set this with your success message
-            cartItems: [], // Populate this array with your cart item data
+            state,
+            removeItem,
+            //showCheckout: state.showCheckout
+            showCheckout,
+            showCheckoutForm,
+            hideCheckoutForm
+
         };
     },
     computed: {
         cartTotal() {
-            return this.cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-        },
-    },
-    methods: {
-        updateCart(item) {
-            // Implement your logic to update the cart item
-            console.log('Updating cart item:', item);
-        },
-        removeFromCart(item) {
-            // Implement your logic to remove the cart item
-            console.log('Removing cart item:', item);
-        },
-        clearCart() {
-            // Implement your logic to clear the cart
-            console.log('Clearing cart');
+            let total = 0;
+            const carts = this.cartItems;
+            for (const itemId in carts) {
+                if (carts.hasOwnProperty(itemId)) {
+                    total += carts[itemId].price * carts[itemId].quantity;
+                }
+            }
+            return total;
         },
     },
 };
@@ -44,69 +71,69 @@ export default {
         <div class="container px-6 mx-auto">
             <div class="flex justify-center my-6">
                 <div class="flex flex-col w-full p-8 text-gray-800 bg-white shadow-lg pin-r pin-y md:w-4/5 lg:w-4/5">
-                    <div v-if="successMessage" class="p-4 mb-3 bg-blue-400 rounded">
+<!--                    <div v-if="successMessage" class="p-4 mb-3 bg-blue-400 rounded">
                         <p class="text-white">{{ successMessage }}</p>
-                    </div>
-                    <h3 class="text-3xl font-bold">Carts</h3>
+                    </div>-->
+                    <!-- Toggle between cart and checkout form -->
+                    <div v-if="!showCheckout">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-3xl font-bold">Your Cart</h3>
+                            <button @click="showCheckoutForm" class="px-6 py-2 text-sm rounded shadow text-white bg-green-500">Proceed to Checkout</button>
+                            <NavLink :href="route('products.list')" :active="route().current('products.list')">
+                               Back to Shopping
+                            </NavLink>
+                        </div>
+                        <!-- Existing cart table code here -->
                     <div class="flex-1">
                         <table class="w-full text-sm lg:text-base" cellspacing="0">
                             <thead>
                             <tr class="h-12 uppercase">
-                                <th class="hidden md:table-cell"></th>
-                                <th class="text-left">Name</th>
-                                <th class="pl-5 text-left lg:text-right lg:pl-0">
+<!--                                <th class="hidden md:table-cell"></th>-->
+                                <th class="py-4 px-6 text-left">Name</th>
+                                <th class="py-4 px-6 text-left">
                                     <span class="lg:hidden" title="Quantity">Qtd</span>
                                     <span class="hidden lg:inline">Quantity</span>
                                 </th>
-                                <th class="hidden text-right md:table-cell">Price</th>
-                                <th class="hidden text-right md:table-cell">Remove</th>
+                                <th class="py-4 px-6 text-left">Price</th>
+                                <th class="py-4 px-6 text-left">Total</th>
+                                <th class="py-4 px-6 text-left">Remove</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="item in cartItems" :key="item.id">
-                                <td class="hidden pb-4 md:table-cell" style="width: 230px;">
-                                    <a :href="item.attributes.image">
-                                        <img :src="item.attributes.image" class="w-[200px] rounded" alt="Thumbnail">
-                                    </a>
+                            <tr v-for="(item, index) in cartItems" :key="item.id" class="border-b">
+                                <td class="py-4 px-6 text-left">{{ item.name }}</td>
+                                <td class="py-4 px-6 text-left">${{ item.price }}</td>
+                                <td class="py-4 px-6 text-left">{{ item.quantity }}</td>
+                                <td class="py-4 px-6 text-left">${{ item.price * item.quantity }}</td>
+                                <td class="py-4 px-6 text-left">
+                                    <button @click="removeItem(item.id, index)" class="px-4 py-2 text-sm text-white bg-red-500 rounded shadow">Remove</button>
                                 </td>
-                                <td>
-                                    <a :href="item.attributes.image">
-                                        <p class="mb-2 text-gray-900 font-bold">{{ item.name }}</p>
-                                    </a>
-                                </td>
-                                <td class="justify-center mt-6 md:justify-end md:flex">
-                                    <div class="h-10 w-28">
-                                        <div class="relative flex flex-row w-full h-8">
-                                            <form @submit.prevent="updateCart(item)">
-                                                <input type="hidden" v-model="item.id" name="id">
-                                                <input type="number" v-model="item.quantity" class="w-full text-center h-10 text-gray-800 outline-none rounded border border-gray-600 py-3" />
-                                                <button type="submit" class="w-full px-4 mt-1 py-1.5 text-sm rounded shadow text-violet-100 bg-gray-800">Update</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="hidden text-right md:table-cell">
-                    <span class="text-sm font-medium lg:text-base">
-                      ${{ item.price }}
-                    </span>
-                                </td>
-                                <td class="hidden text-right md:table-cell">
-                                    <form @submit.prevent="removeFromCart(item)">
-                                        <input type="hidden" v-model="item.id" name="id">
-                                        <button type="submit" class="px-3 py-1 text-white bg-gray-800 shadow rounded-full">x</button>
-                                    </form>
-                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="3" class="py-4 px-6 text-right font-semibold">Total:</td>
+                                <td class="py-4 px-6 text-left font-semibold">${{ cartTotal.toFixed(2) }}</td>
+                                <td class="py-4 px-6 text-left"></td>
                             </tr>
                             </tbody>
                         </table>
-                        <div class="flex justify-between items-center my-5">
-                            <div class="font-semibold text-2xl">Total: ${{ cartTotal }}</div>
-                            <div>
-                                <form @submit.prevent="clearCart">
-                                    <button type="submit" class="px-6 py-2 text-sm rounded shadow text-red-100 bg-gray-800">Clear Carts</button>
-                                </form>
-                            </div>
-                        </div>
+<!--                        <div class="flex justify-between items-center my-5">-->
+<!--                            -->
+<!--                            <div class="font-semibold text-2xl">Total: ${{ cartTotal }}</div>-->
+<!--                            <div>-->
+<!--                                &lt;!&ndash; Clear cart button here &ndash;&gt;-->
+<!--                            </div>-->
+<!--                        </div>-->
+                    </div>
+
+                    </div>
+                    <div v-else>
+                        <!-- Display the checkout form -->
+                        <checkout-form
+                            :cart-items="cartItems"
+                            :total-amount="cartTotal"
+                            @cancel="hideCheckoutForm" />
+                        <!-- Emit this event from CheckoutForm.vue -->
                     </div>
                 </div>
             </div>

@@ -13,7 +13,7 @@ class CartCreateRequest extends  FormRequest
             'name' => 'required|string',
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:1',
-            'attributes.image' => 'nullable|string', // Adjust the validation rule as needed
+            'photo' => 'nullable|string', // Adjust the validation rule as needed
         ];
     }
 

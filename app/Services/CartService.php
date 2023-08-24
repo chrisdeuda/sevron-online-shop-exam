@@ -15,7 +15,18 @@ class CartService
 
     public function addToCart($data)
     {
-        Cart::add($data);
+        // TODO: Make this assignment as DTO for easy processing of data
+        $product = [
+            'id' => $data['id'],
+            'name' => $data['name'],
+            'price' => $data['price'],
+            'quantity' => $data['quantity'],
+            'attributes' => [
+                'photo' => $data['photo'],
+            ],
+        ];
+
+        Cart::add($product);
     }
 
     public function getCartItem($id)

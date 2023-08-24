@@ -6,6 +6,8 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class ProductController extends Controller
 {
@@ -15,7 +17,14 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
-        return response()->json($products);
+        return Inertia::render('Shop/Product/Products', [
+            'products' => $products,
+            'can' => [
+                'create' => Auth::user()->can('product create'),
+                'edit' => Auth::user()->can('product edit'),
+                'delete' => Auth::user()->can('product delete'),
+            ]
+        ]);
     }
 
     /**
