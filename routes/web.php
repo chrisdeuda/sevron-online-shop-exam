@@ -4,6 +4,9 @@ use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Cart\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+
+use  App\Http\Controllers\Admin\Product\ProductController as AdminProductController;
+use  App\Http\Controllers\Admin\Order\OrderController as AdminOrderController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -39,7 +42,7 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('/products', [App\Http\Controllers\Admin\ProductController::class, 'index']);
+Route::get('/products', [AdminProductController::class, 'index']);
 
 require __DIR__.'/auth.php';
 
@@ -53,9 +56,22 @@ Route::group([
     Route::resource('permission', 'PermissionController');
     Route::resource('product', 'ProductController');
 
-    Route::get('product', [App\Http\Controllers\Admin\ProductController::class, 'index'])->name('product.index');
-
+    Route::get('product', [AdminProductController::class, 'index'])->name('admin.product.index');
 });
+
+Route::group([
+    'namespace' => 'App\Http\Controllers\Admin',
+    'prefix' => 'api/admin',
+    'middleware' => ['auth'],
+], function () {
+    Route::post('product', [AdminProductController::class, 'store'])->name('admin.product.store');
+    Route::post('product/{id}', [AdminProductController::class, 'update'])->name('admin.product.update');
+
+    Route::get('orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+});
+
+
+
 
 Route::get('products', [ProductController::class, 'index'])->name('products.list');
 Route::get('cart', [CartController::class, 'index'])->name('cart.index');
