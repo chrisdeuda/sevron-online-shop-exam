@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Cart\CartController;
+use App\Http\Controllers\Cart\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -58,10 +59,12 @@ Route::group([
 
 Route::get('products', [ProductController::class, 'index'])->name('products.list');
 Route::get('cart', [CartController::class, 'index'])->name('cart.index');
+Route::get('cart/total', [CartController::class, 'index'])->name('cart.total');
 Route::post('cart', [CartController::class, 'store'])->name('cart.store');
-Route::put('cart/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::post('cart/{id}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
-Route::delete('cart', [CartController::class, 'clear'])->name('cart.clear');;
+Route::delete('cart', [CartController::class, 'clear'])->name('cart.clear');
+Route::post('api/checkout', [OrderController::class, 'checkout'])->name('order.checkout');
 
 
 Route::group([

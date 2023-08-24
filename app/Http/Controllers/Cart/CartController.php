@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Cart;
 
 use App\Services\CartService;
 use Cart;
+
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -24,13 +25,15 @@ class CartController extends Controller
         $cartItems = $this->cartService->getCartContents();
 
         return Inertia::render('Shop/Product/Cart', [
-            'cartItems' => $cartItems, 
+            'cartItems' => $cartItems,
         ]);
 
     }
     public function store(CartCreateRequest $request)
     {
         $data = $request->validated();
+
+        ray($data);
 
         $this->cartService->addToCart($data);
 
@@ -71,5 +74,10 @@ class CartController extends Controller
         $this->cartService->clearCart();
 
         return response()->json($this->cartService->getCartContents(), Response::HTTP_NO_CONTENT);
+    }
+
+    public function total(){
+        // TODO: Fix returning of total count
+        return response()->json(['total' => Cart::count()]);
     }
 }
