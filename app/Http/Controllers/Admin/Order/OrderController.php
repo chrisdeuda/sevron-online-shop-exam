@@ -16,7 +16,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with('orderItems')->get(); // Eager load the order items
+        $orders = Order::with('orderItems', 'user')->get();
         return response()->json(['orders' => $orders]);
     }
 
