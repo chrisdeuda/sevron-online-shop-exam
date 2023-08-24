@@ -26,30 +26,8 @@ class ProductController extends Controller
         $this->productService = $productService;
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return Response
-     */
-    public function index()
-    {
-        $products = (new Product())->newQuery();
-        $products->latest();
-        $products = $products->paginate(100)->onEachSide(2)->appends(request()->query());
-
-        return Inertia::render('Admin/Product/Index', [
-            'products' => $products,
-            'can' => [
-                'create' => Auth::user()->can('product create'),
-                'edit' => Auth::user()->can('product edit'),
-                'delete' => Auth::user()->can('product delete'),
-            ]
-        ]);
-    }
-
     public function store(ProductCreateRequest $request)
     {
-        ray("Im here");
         $validatedData = $request->validated();
         $productDTO = new ProductDTO($validatedData);
         $product = $this->productService->createProduct($productDTO);
@@ -74,6 +52,5 @@ class ProductController extends Controller
 
         return response()->json(['message' => 'Product updated successfully', 'product' => $updatedProduct]);
     }
-
-
+    
 }
