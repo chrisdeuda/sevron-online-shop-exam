@@ -19,16 +19,7 @@ class CartController extends Controller
         $this->cartService = $cartService;
     }
 
-    public function index()
-    {
-        //TODO: add paginations
-        $cartItems = $this->cartService->getCartContents();
 
-        return Inertia::render('Shop/Product/Cart', [
-            'cartItems' => $cartItems,
-        ]);
-
-    }
     public function store(CartCreateRequest $request)
     {
         $data = $request->validated();

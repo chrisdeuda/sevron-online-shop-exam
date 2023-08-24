@@ -1,36 +1,28 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Product;
 
 use App\Http\Controllers\Controller;
-use App\Models\Post;
 use App\Models\Product;
-use Illuminate\Http\Request;
+use App\Services\Admin\Product\ProductService;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-class ProductController extends Controller
+class ProductPageController extends Controller
 {
-    public function __construct()
+    public function __construct(ProductService $productService)
     {
         $this->middleware('can:product list', ['only' => ['index', 'show']]);
         $this->middleware('can:product create', ['only' => ['create', 'store']]);
         $this->middleware('can:product edit', ['only' => ['edit', 'update']]);
         $this->middleware('can:product delete', ['only' => ['destroy']]);
+
+        $this->productService = $productService;
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        $products = (new Product())->newQuery();
-        $products->latest();
-        $products = $products->paginate(100)->onEachSide(2)->appends(request()->query());
-
-        ray($products);
+        $products = Product::latest()->paginate(100)->onEachSide(2)->appends(request()->query());
 
         return Inertia::render('Admin/Product/Index', [
             'products' => $products,
