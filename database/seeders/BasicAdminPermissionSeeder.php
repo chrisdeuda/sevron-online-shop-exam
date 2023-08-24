@@ -27,18 +27,27 @@ class BasicAdminPermissionSeeder extends Seeder
             'permission create',
             'permission edit',
             'permission delete',
+
             'role list',
             'role create',
             'role edit',
             'role delete',
+
             'user list',
             'user create',
             'user edit',
             'user delete',
+
             'product list',
             'product create',
             'product edit',
             'product delete',
+
+            'order list',
+            'order create',
+            'order edit',
+            'order delete',
+            'order cancel',
         ];
 
         foreach ($permissions as $permission) {
@@ -48,6 +57,8 @@ class BasicAdminPermissionSeeder extends Seeder
         // create roles and assign existing permissions
         $role1 = Role::create(['name' => 'customer']);
         $role1->givePermissionTo('product list');
+        $role1->givePermissionTo('order create');
+
 
         $role2 = Role::create(['name' => 'admin']);
         foreach ($permissions as $permission) {
@@ -64,7 +75,9 @@ class BasicAdminPermissionSeeder extends Seeder
         $user = User::factory()->create([
             'name' => 'Customer 1',
             'email' => 'customer@test.com',
-            'password'=>'12345678'
+            'password'=>'12345678',
+            'address' => '123 Main St, City',
+            'phone' => '123-456-7890',
         ]);
         $user->assignRole($role1);
     }

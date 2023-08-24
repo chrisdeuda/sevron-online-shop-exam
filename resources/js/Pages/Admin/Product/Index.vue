@@ -1,21 +1,3 @@
-<script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-
-const props = defineProps({
-    products: {
-        type: Object,
-        default: () => ({}),
-    },
-    can: {
-        type: Object,
-        default: () => ({}),
-    },
-})
-
-</script>
-
 <template>
     <Head title="Product" />
 
@@ -62,10 +44,14 @@ const props = defineProps({
                                 class="py-4 px-6 w-48"
                             >
                                 <div type="justify-start lg:justify-end" no-wrap>
-                                    <PrimaryButton class="ml-4 bg-green-500 px-2 py-1 rounded text-white cursor-pointer" v-if="can.edit">
+                                    <PrimaryButton class="ml-4 bg-green-500 px-2 py-1 rounded text-white cursor-pointer"
+                                                   v-if="can.edit"
+                                                   @click="editProduct(product)"
+                                    >
                                         Edit
                                     </PrimaryButton>
-                                    <PrimaryButton class="ml-4 bg-red-500 px-2 py-1 rounded text-white cursor-pointer" v-if="can.delete">
+                                    <PrimaryButton class="ml-4 bg-red-500 px-2 py-1 rounded text-white cursor-pointer"
+                                                   v-if="can.delete">
                                         Delete
                                     </PrimaryButton>
                                 </div>
@@ -76,5 +62,50 @@ const props = defineProps({
                 </div>
             </div>
         </div>
+
+        <!-- Show the modal when editModalOpen is true -->
+        <ProductEditModal v-if="editModalOpen" :product="editingProduct" @close="closeEditModal" @save="saveChangesToProduct" />
+
     </AuthenticatedLayout>
+
 </template>
+
+<script setup>
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head, useForm } from '@inertiajs/vue3';
+import PrimaryButton from "@/Components/PrimaryButton.vue"; // Import your modal component
+import { ref, defineProps } from 'vue';
+import ProductEditModal from "@/Pages/Admin/Product/ProductEditModal.vue";
+
+const props = defineProps({
+    products: {
+        type: Object,
+        default: () => ({}),
+    },
+    can: {
+        type: Object,
+        default: () => ({}),
+    },
+});
+
+// Define reactive properties
+const editingProduct = ref(null);
+const editModalOpen = ref(false);
+
+// Add your methods here
+const editProduct = (product) => {
+    editingProduct.value = product;
+    editModalOpen.value = true;
+};
+
+const closeEditModal = () => {
+    editingProduct.value = null;
+    editModalOpen.value = false;
+};
+
+const saveChangesToProduct = () => {
+    // Close the modal
+    closeEditModal();
+};
+
+</script>

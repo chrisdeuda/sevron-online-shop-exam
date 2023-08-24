@@ -1,8 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\Order\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\Product\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\Product\ProductPageController as AdminProductPageController;
 use App\Http\Controllers\Cart\CartController;
+use App\Http\Controllers\Cart\CartPageController;
 use App\Http\Controllers\Cart\OrderController;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Guest\Product\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -39,7 +43,7 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('/products', [App\Http\Controllers\Admin\ProductController::class, 'index']);
+Route::get('/products', [ProductController::class, 'index']);
 
 require __DIR__.'/auth.php';
 
@@ -53,12 +57,26 @@ Route::group([
     Route::resource('permission', 'PermissionController');
     Route::resource('product', 'ProductController');
 
-    Route::get('product', [App\Http\Controllers\Admin\ProductController::class, 'index'])->name('product.index');
-
+    Route::get('product', [AdminProductPageController::class, 'index'])->name('admin.product.index');
 });
 
+Route::group([
+    'namespace' => 'App\Http\Controllers\Admin',
+    'prefix' => 'api/admin',
+    'middleware' => ['auth'],
+], function () {
+    Route::post('product', [AdminProductController::class, 'store'])->name('admin.product.store');
+    Route::post('product/{id}', [AdminProductController::class, 'update'])->name('admin.product.update');
+
+    Route::get('orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+});
+
+
+
 Route::get('products', [ProductController::class, 'index'])->name('products.list');
-Route::get('cart', [CartController::class, 'index'])->name('cart.index');
+
+// Pages
+Route::get('cart', [CartPageController::class, 'index'])->name('cart.index');
 Route::get('cart/total', [CartController::class, 'index'])->name('cart.total');
 Route::post('cart', [CartController::class, 'store'])->name('cart.store');
 Route::post('cart/{id}', [CartController::class, 'update'])->name('cart.update');
@@ -77,6 +95,6 @@ Route::group([
     'middleware' => ['auth'],
 ], function () {
 
-    Route::get('product', [App\Http\Controllers\ProductController::class, 'index'])->name('shop.index');
+    Route::get('product', [\App\Http\Controllers\Guest\Product\ProductController::class, 'index'])->name('shop.index');
 
 });
