@@ -10,7 +10,6 @@ use App\Http\Requests\Cart\OrderCheckoutCreateRequest;
 use App\Services\OrderCheckoutProcessorService;
 use App\Models\User;
 use App\Models\Order;
-use Database\Factories\OrderFactory;
 
 class OrderControllerTest extends TestCase
 {
@@ -88,8 +87,6 @@ class OrderControllerTest extends TestCase
             ],
         ]);
     }
-
-    // Similar tests for other scenarios...
 
     public function testUnauthenticatedAccess()
     {
