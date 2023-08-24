@@ -63,8 +63,6 @@
 </template>
 
 <script>
-// Import the Inertia object here if needed
-//import { Inertia } from '@inertiajs/inertia';
 
 export default {
     props: ['cartItems', 'totalAmount'],

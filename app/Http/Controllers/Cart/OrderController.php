@@ -3,29 +3,35 @@
 namespace App\Http\Controllers\Cart;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cart\OrderCheckoutCreateRequest;
-use App\Models\Order;
-use App\Models\OrderItem;
 use App\Services\OrderCheckoutProcessorService;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
 
-    protected OrderCheckoutProcessorService $orderCheckoutProcessor;
+    protected OrderCheckoutProcessorService $orderCheckoutProcessorService;
 
+    /**
+     * @param OrderCheckoutProcessorService $orderCheckoutProcessor
+     */
     public function __construct(OrderCheckoutProcessorService $orderCheckoutProcessor)
     {
-        $this->orderCheckoutProcessor = $orderCheckoutProcessor;
+        $this->orderCheckoutProcessorService = $orderCheckoutProcessor;
+        $this->middleware('auth');
     }
 
-    public function checkout(OrderCheckoutCreateRequest $request)
+    /**
+     * @param OrderCheckoutCreateRequest $request
+     * @return JsonResponse
+     */
+    public function checkout(OrderCheckoutCreateRequest $request): JsonResponse
     {
         $user = Auth::user();
 
         $requestData = $request->validated();
 
-        $order = $this->orderCheckoutProcessor->processOrderCheckout($user, $requestData);
+        $order = $this->orderCheckoutProcessorService->processOrderCheckout($user, $requestData);
 
         return response()->json(['message' => 'Order placed successfully', 'order' => $order]);
     }

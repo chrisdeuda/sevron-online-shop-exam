@@ -17,7 +17,7 @@ class Order extends Model
     public $incrementing = false;
 
     protected $casts = [
-        'total_amount' => 'decimal:2', // Cast total_amount to decimal with 2 decimal places
+        'total_amount' => 'decimal:2',
     ];
 
     protected static function boot()

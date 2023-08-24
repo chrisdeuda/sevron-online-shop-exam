@@ -9,7 +9,7 @@ export default {
         CheckoutForm
     },
     props: {
-        cartItems: Object, // Provided by Inertia
+        cartItems: Object,
     },
     setup(props) {
         const showCheckout = ref(false);
@@ -44,7 +44,7 @@ export default {
         return {
             state,
             removeItem,
-            //showCheckout: state.showCheckout // Include showCheckout in the return object
+            //showCheckout: state.showCheckout
             showCheckout,
             showCheckoutForm,
             hideCheckoutForm

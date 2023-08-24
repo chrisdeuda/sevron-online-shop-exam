@@ -33,11 +33,8 @@ class CartController extends Controller
     {
         $data = $request->validated();
 
-        ray($data);
-
         $this->cartService->addToCart($data);
 
-        ray($this->cartService->getCartContents());
         return response()->json($this->cartService->getCartContents(), Response::HTTP_OK);
     }
 
