@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Product;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class ProductSeeder extends Seeder
@@ -16,12 +17,16 @@ class ProductSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        foreach (range(1, 10) as $index) {
+        $json = File::get(resource_path('data/products.json'));
+        $data = json_decode($json, true);
+
+        foreach ($data as $item) {
             Product::create([
-                'id' => Str::uuid(), // Generate UUID using Str::uuid()
-                'name' => $faker->word,
-                'description' => $faker->sentence,
-                'price' => $faker->randomFloat(2, 10, 100),
+                'id' => Str::uuid(),
+                'name' => $item['title'],
+                'description' => $item['description'],
+                'price' => $item['price'],
+                'photo' => $item['image'],
             ]);
         }
     }

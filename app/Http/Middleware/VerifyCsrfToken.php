@@ -14,6 +14,7 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         // TODO: Fix CSRF error token mismatch
         'login',
+        'logout',
         'cart',
         'cart/*',
         'api/*'
