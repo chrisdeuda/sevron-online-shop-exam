@@ -31,7 +31,7 @@
                         <!-- Other payment fields -->
                     </fieldset>
                 </section>
-                <button @click.prevent="submitOrder" class="submit-button px-4 py-3 rounded-full bg-pink-400 text-white focus:ring focus:outline-none w-full text-xl font-semibold transition-colors">
+                <button @click.prevent="submitOrder" class="submit-button px-6 py-2 text-sm rounded shadow text-white bg-green-500 focus:ring focus:outline-none w-full text-xl font-semibold transition-colors">
                     Pay ${{ totalAmount.toFixed(2) }}
                 </button>
             </div>
@@ -68,9 +68,8 @@ export default {
     props: ['cartItems', 'totalAmount'],
     data() {
         return {
-            name: '',
-            email: '',
-            // Other data properties
+            name: 'Customer 1',
+            email: 'test@gmail.com',
         };
     },
     methods: {
