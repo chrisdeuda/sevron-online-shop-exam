@@ -104,9 +104,8 @@ const closeEditModal = () => {
 };
 
 const saveChangesToProduct = () => {
-    // Handle saving changes to the product
-    // For example, you can make an API request here to update the product
     // Close the modal
     closeEditModal();
 };
+
 </script>
