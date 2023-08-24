@@ -5,13 +5,17 @@ namespace App\DTO;
 class ProductDTO
 {
     public string $name;
+
     public float $price;
-    // Add more properties as needed
+
+    public ?string $description;
+
+    public ?string $photo;
 
     public function __construct(array $data)
     {
         $this->name = $data['name'];
         $this->price = $data['price'];
-        // Initialize other properties
-    }
+        $this->description = $data['description'] ?? null;
+        $this->photo = $data['photo'] ?? null;     }
 }
