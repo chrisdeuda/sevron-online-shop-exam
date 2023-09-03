@@ -8,10 +8,21 @@ use App\Models\OrderItem;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Service class for processing order checkout.
+ */
 class OrderCheckoutProcessorService
 {
+    /**
+     * @var CartService
+     */
     protected CartService $cartService;
 
+    /**
+     * OrderCheckoutProcessorService constructor.
+     *
+     * @param CartService $cartService
+     */
     public function __construct(CartService $cartService)
     {
         $this->cartService = $cartService;
@@ -20,11 +31,11 @@ class OrderCheckoutProcessorService
     /**
      * Process the order checkout.
      *
-     * @param mixed $user
+     * @param User $user
      * @param array $requestData
      * @return Order
      */
-    public function processOrderCheckout(User $user, array $requestData)
+    public function processOrderCheckout(User $user, array $requestData): Order
     {
         return DB::transaction(function () use ($user, $requestData) {
             // Create an OrderDTO to encapsulate order data
@@ -115,7 +126,7 @@ class OrderCheckoutProcessorService
     protected function createOrderItem(Order $order, OrderItemDTO $orderItemDTO): OrderItem
     {
         // Create a new OrderItem instance and populate its properties
-       return  new OrderItem([
+        return new OrderItem([
             'order_id' => $order->id,
             'product_id' => $orderItemDTO->productId,
             'quantity' => $orderItemDTO->quantity,
@@ -124,3 +135,4 @@ class OrderCheckoutProcessorService
         ]);
     }
 }
+

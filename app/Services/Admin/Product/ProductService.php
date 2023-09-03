@@ -7,6 +7,12 @@ use App\Models\Product;
 
 class ProductService
 {
+    /**
+     * Create a new product.
+     *
+     * @param ProductDTO $productDTO
+     * @return Product
+     */
     public function createProduct(ProductDTO $productDTO)
     {
         $productData = [
@@ -18,6 +24,13 @@ class ProductService
         return Product::create($productData);
     }
 
+    /**
+     * Update a product.
+     *
+     * @param Product $product
+     * @param ProductDTO $productDTO
+     * @return Product
+     */
     public function update(Product $product, ProductDTO $productDTO)
     {
         $productData = [
@@ -25,16 +38,11 @@ class ProductService
             'price' => $productDTO->price ?? $product->price,
             'description' => $productDTO->description ?? $product->description,
             'photo' => $productDTO->photo ?? $product->photo,
-            // Add other properties
+          
         ];
 
         $product->update($productData);
 
         return $product;
-
-        $product->update($productData);
-
-        return $product;
     }
-
 }
