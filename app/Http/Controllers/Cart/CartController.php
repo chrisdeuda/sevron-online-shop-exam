@@ -19,7 +19,6 @@ class CartController extends Controller
         $this->cartService = $cartService;
     }
 
-
     public function store(CartCreateRequest $request)
     {
         $data = $request->validated();
@@ -57,6 +56,7 @@ class CartController extends Controller
 
         return response()->json($this->cartService->getCartContents(), Response::HTTP_OK);
     }
+
     public function clear()
     {
         $this->cartService->clearCart();
@@ -64,8 +64,10 @@ class CartController extends Controller
         return response()->json($this->cartService->getCartContents(), Response::HTTP_NO_CONTENT);
     }
 
-    public function total(){
+    public function total()
+    {
         // TODO: Fix returning of total count
         return response()->json(['total' => Cart::count()]);
     }
 }
+

@@ -28,8 +28,8 @@ class ProductController extends Controller
 
     public function store(ProductCreateRequest $request)
     {
-        $validatedData = $request->validated();
-        $productDTO = new ProductDTO($validatedData);
+       
+        $productDTO = new ProductDTO($request->validated());
         $product = $this->productService->createProduct($productDTO);
 
         return response()->json(['message' => 'Product created successfully', 'product' => $product]);
@@ -37,20 +37,28 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
 
         return response()->json(['product' => $product]);
     }
 
     public function update(ProductUpdateRequest $request, $id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::find($id);
 
-        $validatedData = $request->all();
-        $productDTO = new ProductDTO($validatedData);
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
+
+        $productDTO = new ProductDTO($request->all());
         $updatedProduct = $this->productService->update($product, $productDTO);
 
         return response()->json(['message' => 'Product updated successfully', 'product' => $updatedProduct]);
     }
     
 }
+
