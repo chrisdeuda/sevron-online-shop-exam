@@ -14,14 +14,17 @@ use Inertia\Response;
 class ProductController extends Controller
 {
 
-    protected ProductService $productService;
+    private ProductService $productService;
 
     public function __construct(ProductService $productService)
     {
-        $this->middleware('can:product list', ['only' => ['index', 'show']]);
-        $this->middleware('can:product create', ['only' => ['create', 'store']]);
-        $this->middleware('can:product edit', ['only' => ['edit', 'update']]);
-        $this->middleware('can:product delete', ['only' => ['destroy']]);
+        
+        $this->middleware([
+            'can:product list' => ['index', 'show'],
+            'can:product create' => ['create', 'store'],
+            'can:product edit' => ['edit', 'update'],
+            'can:product delete' => ['destroy']
+        ]);
 
         $this->productService = $productService;
     }

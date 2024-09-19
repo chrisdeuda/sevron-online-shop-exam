@@ -19,6 +19,15 @@ class CartController extends Controller
         $this->cartService = $cartService;
     }
 
+    public function index()
+    {
+        //TODO: add paginations
+        $cartItems = $this->cartService->getCartContents();
+
+        return response()->json($cartItems);
+
+    }
+
     public function store(CartCreateRequest $request)
     {
         $data = $request->validated();
@@ -61,7 +70,9 @@ class CartController extends Controller
     {
         $this->cartService->clearCart();
 
-        return response()->json($this->cartService->getCartContents(), Response::HTTP_NO_CONTENT);
+        $cartContents = $this->cartService->getCartContents();
+
+        return response()->json($cartContents ?: [], Response::HTTP_NO_CONTENT);
     }
 
     public function total()

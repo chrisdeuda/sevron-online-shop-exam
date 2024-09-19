@@ -77,6 +77,8 @@ Route::get('products', [ProductController::class, 'index'])->name('products.list
 
 // Pages
 Route::get('cart', [CartPageController::class, 'index'])->name('cart.index');
+
+Route::get('cart', [CartController::class, 'index'])->name('api.cart.index');
 Route::get('cart/total', [CartController::class, 'index'])->name('cart.total');
 Route::post('cart', [CartController::class, 'store'])->name('cart.store');
 Route::post('cart/{id}', [CartController::class, 'update'])->name('cart.update');

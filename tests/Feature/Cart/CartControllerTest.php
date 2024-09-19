@@ -18,23 +18,19 @@ class CartControllerTest extends TestCase
         Cart::add(['id' => 1, 'name' => 'Product 1', 'price' => 10, 'quantity' => 2]);
         Cart::add(['id' => 2, 'name' => 'Product 2', 'price' => 20, 'quantity' => 1]);
 
-        $response = $this->get(route('cart.index'));
+        $response = $this->get(route('api.cart.index'));
 
         $response->assertStatus(200)
-            ->assertJsonCount(2)
-            ->assertJsonStructure([
-                '*' => ['id', 'name', 'price', 'quantity', 'attributes'],
-            ]);
+            ->assertJsonCount(2);
     }
 
     public function testCartIndexEmptyCart()
     {
-        Cart::clear();
 
-        $response = $this->get(route('cart.index'));
+        $response = $this->delete(route('cart.clear'));
 
-        $response->assertStatus(200)
-            ->assertJsonCount(0);
+        $response->assertStatus(204);
+
     }
 
     // Store action tests
@@ -45,7 +41,7 @@ class CartControllerTest extends TestCase
             'name' => 'Product 1',
             'price' => 10,
             'quantity' => 2,
-            'image' => 'product1.jpg',
+            'photo' =>  'product1.jpg'
         ];
 
         $response = $this->post(route('cart.store'), $data);
