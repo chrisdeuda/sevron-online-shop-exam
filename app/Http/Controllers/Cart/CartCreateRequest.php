@@ -4,8 +4,13 @@ namespace App\Http\Controllers\Cart;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CartCreateRequest extends  FormRequest
+class CartCreateRequest extends FormRequest
 {
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
     public function rules()
     {
         return [
@@ -13,8 +18,7 @@ class CartCreateRequest extends  FormRequest
             'name' => 'required|string',
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:1',
-            'photo' => 'nullable|string', // Adjust the validation rule as needed
+            'photo' => 'nullable|string', 
         ];
     }
-
 }
