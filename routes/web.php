@@ -8,6 +8,7 @@ use App\Http\Controllers\Cart\CartPageController;
 use App\Http\Controllers\Cart\OrderController;
 use App\Http\Controllers\Guest\Product\ProductController;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -88,6 +89,13 @@ Route::delete('cart', [CartController::class, 'clear'])->name('cart.clear');
 
 Route::middleware('auth')->group(function () {
     Route::post('api/checkout', [OrderController::class, 'checkout'])->name('order.checkout');
+});
+
+Route::get('/vapor-ui-test', function () {
+    if (Gate::allows('viewVaporUI')) {
+        return 'Vapor UI should be accessible';
+    }
+    return 'Vapor UI access denied';
 });
 
 
