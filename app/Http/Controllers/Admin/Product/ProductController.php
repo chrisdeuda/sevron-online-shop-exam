@@ -14,22 +14,25 @@ use Inertia\Response;
 class ProductController extends Controller
 {
 
-    protected ProductService $productService;
+    private ProductService $productService;
 
     public function __construct(ProductService $productService)
     {
-        $this->middleware('can:product list', ['only' => ['index', 'show']]);
-        $this->middleware('can:product create', ['only' => ['create', 'store']]);
-        $this->middleware('can:product edit', ['only' => ['edit', 'update']]);
-        $this->middleware('can:product delete', ['only' => ['destroy']]);
+        
+        $this->middleware([
+            'can:product list' => ['index', 'show'],
+            'can:product create' => ['create', 'store'],
+            'can:product edit' => ['edit', 'update'],
+            'can:product delete' => ['destroy']
+        ]);
 
         $this->productService = $productService;
     }
 
     public function store(ProductCreateRequest $request)
     {
-        $validatedData = $request->validated();
-        $productDTO = new ProductDTO($validatedData);
+       
+        $productDTO = new ProductDTO($request->validated());
         $product = $this->productService->createProduct($productDTO);
 
         return response()->json(['message' => 'Product created successfully', 'product' => $product]);
@@ -37,20 +40,28 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
 
         return response()->json(['product' => $product]);
     }
 
     public function update(ProductUpdateRequest $request, $id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::find($id);
 
-        $validatedData = $request->all();
-        $productDTO = new ProductDTO($validatedData);
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
+
+        $productDTO = new ProductDTO($request->all());
         $updatedProduct = $this->productService->update($product, $productDTO);
 
         return response()->json(['message' => 'Product updated successfully', 'product' => $updatedProduct]);
     }
     
 }
+

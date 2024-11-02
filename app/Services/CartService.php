@@ -10,6 +10,7 @@ class CartService
 
     public function getCartContents()
     {
+
         return Cart::getContent();
     }
 
@@ -31,6 +32,7 @@ class CartService
 
     public function getCartItem($id)
     {
+        
        $item = Cart::get($id);
 
         return $item;
