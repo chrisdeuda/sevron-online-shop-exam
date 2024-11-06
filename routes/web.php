@@ -8,6 +8,7 @@ use App\Http\Controllers\Cart\CartPageController;
 use App\Http\Controllers\Cart\OrderController;
 use App\Http\Controllers\Guest\Product\ProductController;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -26,13 +27,21 @@ use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
-        'name' => 'John Doe'
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
     ]);
-})->name('home');
+});
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('Dashboard', [
+        'auth' => [
+            'user' => Auth::user(),
+        ],
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -88,12 +97,12 @@ Route::middleware('auth')->group(function () {
     Route::post('api/checkout', [OrderController::class, 'checkout'])->name('order.checkout');
 });
 
-Route::get('/vapor-ui-test', function () {
-    if (Gate::allows('viewVaporUI')) {
-        return 'Vapor UI should be accessible';
-    }
-    return 'Vapor UI access denied';
-});
+//Route::get('/vapor-ui-test', function () {
+//    if (Gate::allows('viewVaporUI')) {
+//        return 'Vapor UI should be accessible';
+//    }
+//    return 'Vapor UI access denied';
+//});
 
 
 Route::group([
