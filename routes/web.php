@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin\Order\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\Product\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\Product\ProductPageController as AdminProductPageController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Cart\CartPageController;
 use App\Http\Controllers\Cart\OrderController;
@@ -37,10 +40,11 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [
         'auth' => [
-            'user' => Auth::user(),
-        ],
+            'user' => Auth::user()
+        ]
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
+
 
 
 Route::middleware('auth')->group(function () {
@@ -54,28 +58,37 @@ Route::get('/products', [ProductController::class, 'index']);
 
 require __DIR__.'/auth.php';
 
+//Route::group([
+//    'namespace' => 'App\Http\Controllers\Admin',
+//    'prefix' => 'admin',
+//    'middleware' => ['auth'],
+//], function () {
+//    Route::resource('user', 'UserController');
+//    Route::resource('role', 'RoleController');
+//    Route::resource('permission', 'PermissionController');
+//    Route::resource('product', 'ProductController');
+//
+//    Route::get('product', [AdminProductPageController::class, 'index'])->name('admin.product.index');
+//});
+
 Route::group([
-    'namespace' => 'App\Http\Controllers\Admin',
     'prefix' => 'admin',
     'middleware' => ['auth'],
 ], function () {
-    Route::resource('user', 'UserController');
-    Route::resource('role', 'RoleController');
-    Route::resource('permission', 'PermissionController');
-    Route::resource('product', 'ProductController');
-
+    // Admin Product Routes
     Route::get('product', [AdminProductPageController::class, 'index'])->name('admin.product.index');
-});
 
-Route::group([
-    'namespace' => 'App\Http\Controllers\Admin',
-    'prefix' => 'api/admin',
-    'middleware' => ['auth'],
-], function () {
-    Route::post('product', [AdminProductController::class, 'store'])->name('admin.product.store');
-    Route::post('product/{id}', [AdminProductController::class, 'update'])->name('admin.product.update');
+    // Admin API Routes
+    Route::prefix('api')->group(function () {
+        Route::post('product', [AdminProductController::class, 'store'])->name('admin.product.store');
+        Route::post('product/{id}', [AdminProductController::class, 'update'])->name('admin.product.update');
+        Route::get('orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+    });
 
-    Route::get('orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+    // Add other admin resources if needed
+    Route::resource('user', UserController::class);
+    Route::resource('role', RoleController::class);
+    Route::resource('permission', PermissionController::class);
 });
 
 
