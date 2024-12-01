@@ -4,10 +4,17 @@ import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';  // Add this import
+
 
 export default function Authenticated({ auth, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
+    const { url } = usePage();
+    // Add validation
+    if (!auth.user) {
+        return <div>Authentication required</div>;
+    }
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="bg-white border-b border-gray-100">
@@ -21,13 +28,15 @@ export default function Authenticated({ auth, header, children }) {
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink href={route('home')} active={route().current('home')}>
-                                    Home
-                                </NavLink>
-                                <NavLink href={route('dashboard')} active={route().current('dashboard')}>
+                                <NavLink
+                                    href={route('dashboard')}
+                                    active={url === route('dashboard')}  // Use url from usePage
+                                >
                                     Dashboard
                                 </NavLink>
-                                <NavLink href={route('admin.product.index')} active={route().current('admin.product.index')}>
+                                <NavLink
+                                    href={route('admin.product.index')}
+                                    active={url ===  ('admin.product.index')}>
                                     Products
                                 </NavLink>
                             </div>
@@ -98,13 +107,16 @@ export default function Authenticated({ auth, header, children }) {
 
                 <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
                     <div className="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink href={route('home')} active={route().current('home')}>
+                        <ResponsiveNavLink
+                            href={route('dashboard')}
+                            active={url === route('dashboard')}
+                        >
                             Home
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
-                            Dashboard
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink href={route('admin.product.index')} active={route().current('admin.product.index')}>
+                        <ResponsiveNavLink
+                            href={route('admin.product.index')}
+                            active={url ===  ('admin.product.index')}>
+                        >
                             Products
                         </ResponsiveNavLink>
                     </div>
