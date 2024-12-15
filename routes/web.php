@@ -79,16 +79,41 @@ Route::group([
     Route::get('product', [AdminProductPageController::class, 'index'])->name('admin.product.index');
 
     // Admin API Routes
-    Route::prefix('api')->group(function () {
-        Route::post('product', [AdminProductController::class, 'store'])->name('admin.product.store');
-        Route::post('product/{id}', [AdminProductController::class, 'update'])->name('admin.product.update');
-        Route::get('orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
-    });
+//    Route::prefix('api')->group(function () {
+//        Route::post('product', [AdminProductController::class, 'store'])->name('admin.product.store');
+//        Route::post('product/{id}', [AdminProductController::class, 'update'])->name('admin.product.update');
+//        Route::get('orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+//    });
 
     // Add other admin resources if needed
     Route::resource('user', UserController::class);
     Route::resource('role', RoleController::class);
     Route::resource('permission', PermissionController::class);
+});
+
+// Separate API routes
+Route::prefix('api/admin')->middleware('auth')->group(function () {
+//    Route::post('product', function() {
+//     //   dump('API Product store route hit!');
+//        return app(AdminProductController::class)->store(request());
+//    })->name('api.admin.product.store');
+
+    Route::post('product', [AdminProductController::class, 'store'])->name('admin.product.store');
+
+  //  Route::post('product/{id}', [AdminProductController::class, 'update'])->name('admin.product.update');
+    Route::post('product/{id}', [AdminProductController::class, 'update'])
+        ->name('api.admin.product.update');
+
+
+//    Route::post('product/{id}', function($id) {
+//        dump('API Product update route hit!');
+//        return app(AdminProductController::class)->update(request(), $id);
+//    })->name('api.admin.product.update');
+
+    Route::get('orders', function() {
+        dump('API Orders index route hit!');
+        return app(AdminOrderController::class)->index();
+    })->name('api.admin.orders.index');
 });
 
 
