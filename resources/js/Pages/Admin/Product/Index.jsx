@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
 import PrimaryButton from '@/components/PrimaryButton';
-// import ProductEditModal from '@/pages/Admin/Product/ProductEditModal';
+import ProductEditModal from '@/pages/Admin/Product/ProductEditModal';
 
 const Index = ({ auth, products, can }) => {
     const [editingProduct, setEditingProduct] = useState(null);
@@ -105,13 +105,13 @@ const Index = ({ auth, products, can }) => {
                 </div>
             </div>
 
-            {/*{editModalOpen && (*/}
-            {/*    <ProductEditModal*/}
-            {/*        product={editingProduct}*/}
-            {/*        onClose={closeEditModal}*/}
-            {/*        onSave={saveChangesToProduct}*/}
-            {/*    />*/}
-            {/*)}*/}
+            {editModalOpen && (
+                <ProductEditModal
+                    product={editingProduct}
+                    onClose={closeEditModal}
+                    onSave={saveChangesToProduct}
+                />
+            )}
         </AuthenticatedLayout>
     );
 };
