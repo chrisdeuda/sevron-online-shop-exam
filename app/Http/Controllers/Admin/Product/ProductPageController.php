@@ -30,6 +30,9 @@ class ProductPageController extends Controller
                 'create' => Auth::user()->can('product create'),
                 'edit' => Auth::user()->can('product edit'),
                 'delete' => Auth::user()->can('product delete'),
+            ],
+            'auth' => [
+                'user' => Auth::user()
             ]
         ]);
     }
