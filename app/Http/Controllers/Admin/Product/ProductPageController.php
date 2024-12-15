@@ -12,24 +12,28 @@ class ProductPageController extends Controller
 {
     public function __construct(ProductService $productService)
     {
-        $this->middleware('can:product list', ['only' => ['index', 'show']]);
-        $this->middleware('can:product create', ['only' => ['create', 'store']]);
-        $this->middleware('can:product edit', ['only' => ['edit', 'update']]);
-        $this->middleware('can:product delete', ['only' => ['destroy']]);
+//        $this->middleware('can:product list', ['only' => ['index', 'show']]);
+//        $this->middleware('can:product create', ['only' => ['create', 'store']]);
+//        $this->middleware('can:product edit', ['only' => ['edit', 'update']]);
+//        $this->middleware('can:product delete', ['only' => ['destroy']]);
 
         $this->productService = $productService;
     }
 
     public function index()
     {
+//        dump('Hellow world');
         $products = Product::latest()->paginate(100)->onEachSide(2)->appends(request()->query());
 
         return Inertia::render('Admin/Product/Index', [
             'products' => $products,
             'can' => [
-                'create' => Auth::user()->can('product create'),
-                'edit' => Auth::user()->can('product edit'),
-                'delete' => Auth::user()->can('product delete'),
+//                'create' => Auth::user()->can('product create'),
+//                'edit' => Auth::user()->can('product edit'),
+//                'delete' => Auth::user()->can('product delete'),
+            'create' =>true,
+                'edit' => true,
+                'delete' => true,
             ],
             'auth' => [
                 'user' => Auth::user()
