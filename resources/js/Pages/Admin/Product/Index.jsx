@@ -3,10 +3,11 @@ import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
 import PrimaryButton from '@/components/PrimaryButton';
 import ProductEditModal from '@/pages/Admin/Product/ProductEditModal';
 
-const Index = ({ auth, products, can }) => {
+const Index = ({ auth, products: initialProducts, can })  => {
+
     const [editingProduct, setEditingProduct] = useState(null);
     const [editModalOpen, setEditModalOpen] = useState(false);
-
+    const [products, setProducts] = useState(initialProducts)
     // Add debugging
     console.log('Dashboard Auth:', auth);
 
@@ -25,7 +26,14 @@ const Index = ({ auth, products, can }) => {
         setEditModalOpen(false);
     };
 
-    const saveChangesToProduct = () => {
+    const saveChangesToProduct = (updatedProduct) => {
+        setProducts( prevProducts =>({
+            ...prevProducts,
+            data: prevProducts.data.map(
+                product=> product.id === updatedProduct.id ? updatedProduct: product
+            )
+            })
+        );
         closeEditModal();
     };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export default function ProductEditModal({ product, onClose }) {
+export default function ProductEditModal({ product, onClose, onSave }) {
     const [editedProduct, setEditedProduct] = useState({ ...product });
     const [alertMessage, setAlertMessage] = useState(null);
 
@@ -22,6 +22,7 @@ export default function ProductEditModal({ product, onClose }) {
 
             if (response.status === 200) {
                 setAlertMessage('Product updated successfully');
+                onSave(editedProduct);
                 setTimeout(() => {
                     closeModal();
                 }, 2000);
