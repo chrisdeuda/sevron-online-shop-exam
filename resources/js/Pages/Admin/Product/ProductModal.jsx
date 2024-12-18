@@ -17,20 +17,23 @@ export default function ProductModal({ product, onClose, onSave, mode }) {
         e.preventDefault();
         try {
             let response;
+            let message
             if (mode === 'edit') {
                 response = await axios.post(`/api/admin/product/${editedProduct.id}`, editedProduct);
             } else {
                 response = await axios.post('/api/admin/product', editedProduct);
             }
 
-            if (response.status === 200) {
-                setAlertMessage(mode === 'edit' ? 'Product updated successfully' : 'Product added successfully');
-                onSave(editedProduct);
+            if (response.status === 200 || response.status === 201 ) {
+                message = mode === 'edit' ? 'Product updated successfully' : 'Product added successfully' ;
+                setAlertMessage(message);
                 setTimeout(() => {
+                    onSave(editedProduct);
                     closeModal();
                 }, 2000);
             } else {
-                setAlertMessage(mode === 'edit' ? 'Failed to update product' : 'Failed to add product');
+                message =  mode === 'edit' ? 'Failed to update product' : 'Failed to add product';
+                setAlertMessage(message);
             }
         } catch (error) {
             console.error('Error saving product:', error);
