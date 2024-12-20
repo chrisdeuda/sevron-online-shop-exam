@@ -4,9 +4,11 @@ import axios from 'axios';
 export default function ProductModal({ product, onClose, onSave, mode }) {
     const [editedProduct, setEditedProduct] = useState(product || {});
     const [alertMessage, setAlertMessage] = useState(null);
+    const [preview, setPreview] = useState(null);
 
     useEffect(() => {
         setEditedProduct(product || {});
+        setPreview(product?.image_url || null);
     }, [product]);
 
     const closeModal = () => {
@@ -16,19 +18,33 @@ export default function ProductModal({ product, onClose, onSave, mode }) {
     const saveChanges = async (e) => {
         e.preventDefault();
         try {
+            const formData = new FormData();
+            for (const key in editedProduct) {
+                if (key === 'image' && editedProduct[key] instanceof File) {
+                    formData.append(key, editedProduct[key]);
+                } else {
+                    formData.append(key, editedProduct[key]);
+                }
+            }
+
             let response;
             let message
             if (mode === 'edit') {
-                response = await axios.post(`/api/admin/product/${editedProduct.id}`, editedProduct);
+                response = await axios.post(`/api/admin/product/${editedProduct.id}`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
             } else {
-                response = await axios.post('/api/admin/product', editedProduct);
+                response = await axios.post('/api/admin/product', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
             }
 
             if (response.status === 200 || response.status === 201 ) {
                 message = mode === 'edit' ? 'Product updated successfully' : 'Product added successfully' ;
                 setAlertMessage(message);
                 setTimeout(() => {
-                    onSave(editedProduct);
+                    // MODIFIED: Pass response.data instead of editedProduct
+                    onSave(response.data);
                     closeModal();
                 }, 2000);
             } else {
@@ -42,8 +58,24 @@ export default function ProductModal({ product, onClose, onSave, mode }) {
     };
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setEditedProduct(prev => ({ ...prev, [name]: value }));
+        const { name, value, type, files } = e.target;
+        if (type === 'file') {
+            const file = files[0];
+            setEditedProduct(prev => ({ ...prev, [name]: file }));
+
+            // Create a preview URL
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreview(reader.result);
+            };
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                setPreview(null);
+            }
+        } else {
+            setEditedProduct(prev => ({ ...prev, [name]: value }));
+        }
     };
 
     return (
@@ -96,8 +128,36 @@ export default function ProductModal({ product, onClose, onSave, mode }) {
                                     ></textarea>
                             </td>
                         </tr>
+                        <tr>
+                            <td className="w-1/4">
+                                <label className="block">Product Image:</label>
+                            </td>
+                            <td className="w-3/4">
+                                <input
+                                    type="file"
+                                    name="image"
+                                    onChange={handleInputChange}
+                                    accept="image/*"
+                                    className="mt-1 w-full"
+                                />
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
+                    {preview && (
+                        <div className="mt-4">
+                            <h3 className="font-semibold">Image Preview:</h3>
+                            <div className="mt-2 w-48 h-48 overflow-hidden">
+                                <img
+                                    src={preview}
+                                    alt="Preview"
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                        </div>
+                    )}
+
+
                     <div className="mt-4 flex justify-end">
                         <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded">
                             {mode === 'edit' ? 'Save Changes' : 'Add Product'}
